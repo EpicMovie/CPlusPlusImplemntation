@@ -158,5 +158,22 @@ int main()
     d2 = std::move(d1);
 }
 
+// Forward
+// Forwards lvalues as either lvalues or as rvalues, depending on T
+// 
+template <class T> 
+T&& forward(typename std::remove_reference<T>::type& t) noexcept;
+ 
+template <class T>
+constexpr T&& forward(typename std::remove_reference<T>::type& t) noexcept;
+
+template <class T>
+T&& forward(typename std::remove_reference<T>::type&& t) noexcept;
+
+template<class T>
+constexpr T&& forward(typename std::remove_reference<T>::type&& t) noexcept;
+
+
+
 
 
