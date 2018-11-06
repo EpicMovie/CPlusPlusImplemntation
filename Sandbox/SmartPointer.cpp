@@ -94,3 +94,52 @@ int main()
         std::unique_ptr<D[]> p{new D[3]};
     }
 }
+
+/*
+make_unique
+
+template <typename T, typename ... Args>
+unique_ptr<T> make_unique(Args&& ... args);
+
+template <typename T>
+unique_ptr<T> make_unique(std::size_t size); 
+
+Constructs an object of type T and wraps it in a std::unique_ptr
+
+1. Constructs a non-array type T : unique_ptr<T>(new T(std::forward<Args>(args)...))
+
+2. Constructs an array of unknown bound T : unique_ptr<T>(new typename std::remove_extend<T>::type[size]())
+
+3. Construction of arrays of know bound is disallowed
+*/
+
+#include <iostream>
+#include <memory>
+
+struct Vec3
+{
+    int x, y, z;
+    Vec3() : x(0), y(0), z(0) {}
+    Vec3(int x, int y, int z) : x(x), y(y), z(z) {}
+    friend std::ostream& operator<<(std::ostream& os, Vec3& v)
+    {
+        return os << "{" << "X : " << v.x << " Y : " << v.y << " Z : " << v.z "}" << std::endl;
+    }
+}
+
+int main()
+{
+    std::unique_ptr<Vec3> v1 = std::make_unique<Vec3>();
+    std::unique_ptr<Vec3> v2 = std::make_unique<Vec3>(3, 3, 3);
+    std::unique_ptr<Vec3[]> v3 = std::make_unique<Vec3[]>(5);
+    
+    std::cout << "make_unique<Vec3>():      " << *v1 << '\n'
+              << "make_unique<Vec3>(0,1,2): " << *v2 << '\n'
+              << "make_unique<Vec3[]>(5):   " << '\n';
+              
+    for (int i = 0; i < 5; i++) {
+        std::cout << "     " << v3[i] << '\n';
+}
+
+
+
