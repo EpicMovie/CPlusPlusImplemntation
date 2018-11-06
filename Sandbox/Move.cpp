@@ -158,9 +158,10 @@ int main()
     d2 = std::move(d1);
 }
 
-// Forward
-// Forwards lvalues as either lvalues or as rvalues, depending on T
-// 
+/*
+Forward
+Forwards lvalues as either lvalues or as rvalues, depending on T
+ 
 template <class T> 
 T&& forward(typename std::remove_reference<T>::type& t) noexcept;
  
@@ -173,7 +174,75 @@ T&& forward(typename std::remove_reference<T>::type&& t) noexcept;
 template<class T>
 constexpr T&& forward(typename std::remove_reference<T>::type&& t) noexcept;
 
+template<class T>
+void wrapper(T&& arg)
+{
+    foo(std::forward<T>(arg));
+}
 
+arg : rvalue -> forward : rvalue
+arg : const lvalue -> forward : const lvalue
+arg : non-const lvalue -> forward : non-const lvalue
+
+template<class T>
+void wrapper(T&& arg)
+{
+    foo(forward<decltype(forward<T>(arg).get())>(forward<T>(arg).get()));
+}
+
+forward can also be used as an expression 
+*/
+
+
+*******************************************************************************/
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <array>
+
+struct A
+{
+    A(int&& n) { std::cout << "rvalue overload, n = " << n << std::endl;
+    A(int& n) { std::cout << "lvalue overload, n = " << n << std::endl;
+};
+
+class B
+{
+public:
+    template<typename T1, typename T2, typename T3>
+    B(T1&& t1, T2&& t2, T3&& t3) :
+        a1_{std::forward<T1>(t1)},
+        a2_{std::forward<T2>(t2)},
+        a3_{std::forward<T3>(t3)}
+    {
+    }
+
+private:
+    A a1_, a2_, a3_;
+};
+
+template <typename T, typename U>
+std::unique_ptr<T> make_unique1(U&& u)
+{
+    return std::unique_ptr<T>(new T(std::froward<U>(u)));
+}
+
+template <typename T, typename ... U>
+std::unique_ptr<T> make_unique(U&& ... u)
+{
+    return std::unique_ptr<T>(new T(std::forward<U>(u) ... ));
+}
+
+int main()
+{
+    auto p1 = make_unique1<A>(2);
+    int i = 1;
+    auto p2 = make_unique1<A>(i);
+    
+    std::cout << "B" << std::endl;
+    
+    auto t = make_unique<B>(2, i, 3);
+}
 
 
 
