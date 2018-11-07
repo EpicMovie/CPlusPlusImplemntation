@@ -13,6 +13,13 @@ Write your code in this editor and press "Run" button to compile and execute it.
 
 constexpr long long size = 100000000;
 
+enum class State : int
+{
+    Simple,
+    Single_Lock,
+    Single_Lock_With_Atomic
+};
+
 int main()
 {
     std::vector<int> randValues;
@@ -31,9 +38,28 @@ int main()
     
     unsigned long long sum = {};
     
-    for(auto n : randValues)
+    State state = State::Simple;
+  
+    switch(state)
     {
-        sum += n;
+        case State::Simple:
+        {
+            for(auto n : randValues)
+            {
+                sum += n;
+            }
+            break;
+        }
+        case State::Single_Lock:
+        {
+            std::mutex myMutex;
+            for(auto i : randValues)
+            {
+                std::lock_guard<std::mutex> myLockGuard(myMutex);
+                sum += i;
+            }
+            break;
+        }
     }
         
     const std::chrono::duration<double> dur = std::chrono::steady_clock::now() - sta;
