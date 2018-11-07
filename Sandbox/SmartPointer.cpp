@@ -158,6 +158,27 @@ The object is destroyed and its memory deallocated when either of the following 
 
 2. the last remaining shared_ptr owning the object is assigned another pointer via operator= or reset()
 
+********************************************************************************************
+
+std::allocate_shared
+
+template <typename T, typename Alloc, typename ... Args>
+std::shared_ptr<T> allocate_shared<const Alloc& alloc, Args&& ... args);
+
+template <typename T, typename Arr>
+std::shared_ptr<T> allocate_shared(const Arr& arr, std::size_t N);
+
+template <typename T, typename Arr>
+std::shared_ptr<T> allocate_shared(const Arr& arr);
+
+template <typename T, typename Arr>
+std::shared_ptr<T> allocate_shared(const Arr& arr, std::size_t N, const std::remove_extent_t<T>& u);
+
+template <typename T, typename Arr>
+std::shared_ptr<T> allocate_shared(const Arr& arr, const std::remove_extent_t<T>& u);
+
+Constructs an object of type T and wraps it in a std::shared_ptr using args as the parameter list for the constructor of T.
+
 */
 
 #include <iostream>
